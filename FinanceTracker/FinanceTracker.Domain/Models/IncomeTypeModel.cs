@@ -6,7 +6,14 @@ using System.Threading.Tasks;
 
 namespace FinanceTracker.Domain.Models
 {
-    internal class IncomeTypeModel
+    public class IncomeTypeModel : BaseModel
     {
+        public IncomeTypeModel() =>
+            (UserId, Name) = (Guid.Empty, "None");
+        public IncomeTypeModel(Guid userId, string name) =>
+            (UserId, Name) = (userId, name);
+
+        public Guid UserId { get; set; }
+        public string Name { get; set; }
     }
 }

@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace FinanceTracker.Domain.Enums
 {
-    internal class RoleType
+    public enum RoleType
     {
+        USER,
+        ADMIN,
     }
 }
