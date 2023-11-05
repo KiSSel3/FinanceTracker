@@ -1,0 +1,99 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Authorization</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/authorization.css" asp-append-version="true" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div id="errorModal" class="modal">
+            <div class="modal-content">
+                <p>@Html.ValidationSummary(false, "", new { @class = "text-danger" })</p>
+                <span class="close" id="closeErrorModal">&times;</span>
+            </div>
+        </div>
+    }
+
+    <div class="container">
+        <div class="row center-block">
+            <div class="col-md-offset-3 col-md-6">
+                <div class="tab" role="tabpanel">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#Section1" aria-controls="home" role="tab" data-toggle="tab">sign in</a></li>
+                        <li role="presentation"><a href="#Section2" aria-controls="profile" role="tab" data-toggle="tab">sign up</a></li>
+                    </ul>
+                    <div class="tab-content tabs">
+                        <div role="tabpanel" class="tab-pane fade in active" id="Section1">
+                            <form class="form-horizontal" asp-controller="Account" asp-action="Login" method="post">
+                                <div class="form-group">
+                                    <label for="inputLogin1">Login</label>
+                                    <input name="Login" type="text" class="form-control" id="inputLogin1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="inputPassword1">Password</label>
+                                    <input name="Password" type="password" class="form-control" id="inputPassword1">
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-outline-warning">Sign in</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div role="tabpanel" class="tab-pane fade" id="Section2">
+                            <form class="form-horizontal" asp-controller="Account" asp-action="Register" method="post">
+                                <div class="form-group">
+                                    <label for="inputLogin2">Login</label>
+                                    <input name="Login" type="text" class="form-control" id="inputLogin2">
+                                </div>
+                                <div class="form-group">
+                                    <label for="inputAge">Age</label>
+                                    <input name="Age" type="number" class="form-control" id="inputAge">
+                                </div>
+                                <div class="form-group">
+                                    <label for="inputPassword2">Password</label>
+                                    <input name="Password" type="password" class="form-control" id="inputPassword2">
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-outline-warning">Sign up</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var errorModal = document.getElementById("errorModal");
+        var closeErrorModal = document.getElementById("closeErrorModal");
+
+        // Открытие модального окна при наличии ошибки
+        @if (!ViewData.ModelState.IsValid)
+        {
+            @:errorModal.style.display = "block";
+        }
+
+            // Закрытие модального окна при клике на крестик
+            closeErrorModal.onclick = function() {
+                errorModal.style.display = "none";
+            };
+
+        // Закрытие модального окна при клике вне окна
+        window.onclick = function (event) {
+            if (event.target == errorModal) {
+                errorModal.style.display = "none";
+            }
+        };
+    </script>
+</body>
+</html>
