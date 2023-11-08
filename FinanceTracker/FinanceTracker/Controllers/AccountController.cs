@@ -31,7 +31,7 @@ namespace FinanceTracker.Controllers
                 BaseResponse<ClaimsIdentity> response = await _userService.LoginAsync(model);
                 if (response.Success == true)
                 {
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(response.Data));
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(response.Data), new AuthenticationProperties { ExpiresUtc = DateTime.UtcNow.AddMinutes(5)});
 
                     return Redirect("/");
                 }
@@ -62,11 +62,9 @@ namespace FinanceTracker.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Logout()
         {
-            if (!User.Identity.IsAuthenticated)
-                return View("Error", "Вы не вошли в аккаунт!");
-
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return Redirect("/");
         }

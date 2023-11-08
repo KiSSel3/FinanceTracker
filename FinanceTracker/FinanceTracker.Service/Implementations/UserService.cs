@@ -114,6 +114,7 @@ namespace FinanceTracker.Service.Implementations
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login),
                 new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.ToString()),
+                new Claim("UserId", user.Id.ToString()),
             };
 
             return new ClaimsIdentity(claims, "Authentication", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);

@@ -9,8 +9,13 @@
     <title>Authorization</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
     <link rel="stylesheet" href="~/css/authorization.css" asp-append-version="true" />
+
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="~/lib/font-awesome/js/all.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
@@ -36,34 +41,34 @@
                         <div role="tabpanel" class="tab-pane fade in active" id="Section1">
                             <form class="form-horizontal" asp-controller="Account" asp-action="Login" method="post">
                                 <div class="form-group">
-                                    <label for="inputLogin1">Login</label>
+                                    <label for="inputLogin1"><i class="fa fa-user"></i>&nbsp;Login</label>
                                     <input name="Login" type="text" class="form-control" id="inputLogin1">
                                 </div>
                                 <div class="form-group">
-                                    <label for="inputPassword1">Password</label>
+                                    <label for="inputPassword1"><i class="fa fa-lock"></i>&nbsp;Password</label>
                                     <input name="Password" type="password" class="form-control" id="inputPassword1">
                                 </div>
                                 <div class="form-group">
-                                    <button type="submit" class="btn btn-outline-warning">Sign in</button>
+                                    <button type="submit" class="btn btn-outline-warning"><i class="fa-solid fa-arrow-up-from-bracket fa-bounce"></i>&nbsp;Sign in</button>
                                 </div>
                             </form>
                         </div>
                         <div role="tabpanel" class="tab-pane fade" id="Section2">
                             <form class="form-horizontal" asp-controller="Account" asp-action="Register" method="post">
                                 <div class="form-group">
-                                    <label for="inputLogin2">Login</label>
+                                    <label for="inputLogin2"><i class="fa fa-user"></i>&nbsp;Login</label>
                                     <input name="Login" type="text" class="form-control" id="inputLogin2">
                                 </div>
                                 <div class="form-group">
-                                    <label for="inputAge">Age</label>
+                                    <label for="inputAge"><i class="fa fa-calendar"></i>&nbsp;Age</label>
                                     <input name="Age" type="number" class="form-control" id="inputAge">
                                 </div>
                                 <div class="form-group">
-                                    <label for="inputPassword2">Password</label>
+                                    <label for="inputPassword2"><i class="fa fa-lock"></i>&nbsp;Password</label>
                                     <input name="Password" type="password" class="form-control" id="inputPassword2">
                                 </div>
                                 <div class="form-group">
-                                    <button type="submit" class="btn btn-outline-warning">Sign up</button>
+                                    <button type="submit" class="btn btn-outline-warning"><i class="fa-solid fa-arrow-up-from-bracket fa-bounce"></i>&nbsp;Sign up</button>
                                 </div>
                             </form>
                         </div>

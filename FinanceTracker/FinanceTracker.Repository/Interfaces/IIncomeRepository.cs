@@ -11,6 +11,6 @@ namespace FinanceTracker.Repository.Interfaces
     {
         public Task<IEnumerable<IncomeModel>> GetByUserIdAsync(Guid id);
         public Task<IEnumerable<IncomeModel>> GetByIncomeTypeIdAsync(Guid id);
-        public Task<IEnumerable<IncomeModel>> GetByFinancialAccountIddAsync(Guid id);
+        public Task<IEnumerable<IncomeModel>> GetByFinancialAccountIdAsync(Guid id);
     }
 }

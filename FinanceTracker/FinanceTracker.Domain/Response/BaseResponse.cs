@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FinanceTracker.Domain.Response
 {
-    public class BaseResponse<T> where T : class 
+    public class BaseResponse<T>
     {
         public BaseResponse() { }
         public BaseResponse(bool success, T? data) => (Success, Data) = (success, data);

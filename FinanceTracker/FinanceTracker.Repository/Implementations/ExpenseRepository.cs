@@ -41,7 +41,7 @@ namespace FinanceTracker.Repository.Implementations
                 .Where(expense => expense.ExpenseTypeId.Equals(id));
         }
 
-        public async Task<IEnumerable<ExpenseModel>> GetByFinancialAccountIddAsync(Guid id)
+        public async Task<IEnumerable<ExpenseModel>> GetByFinancialAccountIdAsync(Guid id)
         {
             return _db.Expenses
                 .AsNoTracking()

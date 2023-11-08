@@ -34,7 +34,7 @@ namespace FinanceTracker.Repository.Implementations
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<IncomeModel>> GetByFinancialAccountIddAsync(Guid id)
+        public async Task<IEnumerable<IncomeModel>> GetByFinancialAccountIdAsync(Guid id)
         {
             return _db.Incomes
                 .AsNoTracking()
