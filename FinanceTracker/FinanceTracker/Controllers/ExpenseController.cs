@@ -1,18 +1,15 @@
 ﻿using FinanceTracker.Domain.ViewModels;
 using FinanceTracker.Models;
 using FinanceTracker.Service.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinanceTracker.Controllers
 {
-    [Authorize]
-    public class FinancialAccountController : Controller
+    public class ExpenseController : Controller
     {
-        private readonly IFinancialAccountService _financialAccountService;
-
-        public FinancialAccountController(IFinancialAccountService financialAccountService) =>
-            (_financialAccountService) = (financialAccountService);
+        private readonly IExpenseTypeService _expenseTypeService;
+        public ExpenseController(IExpenseTypeService expenseTypeService) =>
+            (_expenseTypeService) = (expenseTypeService);
 
         [HttpGet]
         public async Task<IActionResult> Index()
@@ -25,30 +22,30 @@ namespace FinanceTracker.Controllers
 
             var userIdGuid = Guid.Parse(userIdString);
 
-            var financialAccountServiceResponse = await _financialAccountService.GetFinancialAccountsByUserIdAsync(userIdGuid);
-            if (!financialAccountServiceResponse.Success)
+            var expenseTypeServiceResponse = await _expenseTypeService.GetExpenseTypesByUserIdAsync(userIdGuid);
+            if (!expenseTypeServiceResponse.Success)
             {
-                return View("Error", new ErrorViewModel() { RequestId = financialAccountServiceResponse.Message });
+                return View("Error", new ErrorViewModel() { RequestId = expenseTypeServiceResponse.Message });
             }
 
-            return View(financialAccountServiceResponse.Data.ToList());
+            return View(expenseTypeServiceResponse.Data.ToList());
         }
 
         [HttpGet]
-        public async Task<IActionResult> Delete(Guid financialAccountId)
+        public async Task<IActionResult> DeleteType(Guid expenseTypeId)
         {
-            var deleteResponse = await _financialAccountService.DeleteFinancialAccountAsync(financialAccountId);
+            var deleteResponse = await _expenseTypeService.DeleteExpenseTypeAsync(expenseTypeId);
 
             if (!deleteResponse.Success)
             {
                 return View("Error", new ErrorViewModel() { RequestId = deleteResponse.Message });
             }
 
-            return Redirect("/FinancialAccount");
+            return Redirect("/Expense");
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(TypeViewModel model, Guid financialAccountId)
+        public async Task<IActionResult> UpdateType(TypeViewModel model, Guid expenseTypeId)
         {
             string userIdString = User.FindFirst("UserId")?.Value;
             if (string.IsNullOrEmpty(userIdString))
@@ -58,7 +55,7 @@ namespace FinanceTracker.Controllers
 
             var userIdGuid = Guid.Parse(userIdString);
 
-            var getResponse = await _financialAccountService.GetFinancialAccountsByUserIdAsync(userIdGuid);
+            var getResponse = await _expenseTypeService.GetExpenseTypesByUserIdAsync(userIdGuid);
             if (!getResponse.Success)
             {
                 return View("Error", new ErrorViewModel() { RequestId = getResponse.Message });
@@ -69,7 +66,7 @@ namespace FinanceTracker.Controllers
                 return View("Index", getResponse.Data.ToList());
             }
 
-            var updateResponse = await _financialAccountService.UpdateFinancialAccountAsync(model, financialAccountId, userIdGuid);
+            var updateResponse = await _expenseTypeService.UpdateExpenseTypeAsync(model, expenseTypeId, userIdGuid);
 
             if (!updateResponse.Success)
             {
@@ -78,11 +75,11 @@ namespace FinanceTracker.Controllers
                 return View("Index", getResponse.Data.ToList());
             }
 
-            return Redirect("/FinancialAccount");
+            return Redirect("/Expense");
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(TypeViewModel model)
+        public async Task<IActionResult> CreateType(TypeViewModel model)
         {
             string userIdString = User.FindFirst("UserId")?.Value;
             if (string.IsNullOrEmpty(userIdString))
@@ -92,7 +89,7 @@ namespace FinanceTracker.Controllers
 
             var userIdGuid = Guid.Parse(userIdString);
 
-            var getResponse = await _financialAccountService.GetFinancialAccountsByUserIdAsync(userIdGuid);
+            var getResponse = await _expenseTypeService.GetExpenseTypesByUserIdAsync(userIdGuid);
             if (!getResponse.Success)
             {
                 return View("Error", new ErrorViewModel() { RequestId = getResponse.Message });
@@ -103,7 +100,7 @@ namespace FinanceTracker.Controllers
                 return View("Index", getResponse.Data.ToList());
             }
 
-            var createResponse = await _financialAccountService.CreateFinancialAccountAsync(model, userIdGuid);
+            var createResponse = await _expenseTypeService.CreateExpenseTypeAsync(model, userIdGuid);
 
             if (!createResponse.Success)
             {
@@ -112,7 +109,7 @@ namespace FinanceTracker.Controllers
                 return View("Index", getResponse.Data.ToList());
             }
 
-            return Redirect("/FinancialAccount");
+            return Redirect("/Expense");
         }
     }
 }

@@ -30,6 +30,10 @@ namespace FinanceTracker
             builder.Services.AddScoped<IUserService, UserService>();
 
             builder.Services.AddScoped<IFinancialAccountService, FinancialAccountService>();
+
+            builder.Services.AddScoped<IIncomeTypeService, IncomeTypeService>();
+
+            builder.Services.AddScoped<IExpenseTypeService, ExpenseTypeService>();
         }
 
         public static void AddAuthentication(this WebApplicationBuilder builder)
