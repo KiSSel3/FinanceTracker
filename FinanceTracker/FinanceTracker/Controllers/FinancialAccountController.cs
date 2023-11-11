@@ -31,20 +31,12 @@ namespace FinanceTracker.Controllers
                 return View("Error", new ErrorViewModel() { RequestId = financialAccountServiceResponse.Message });
             }
 
-            return View(financialAccountServiceResponse.Data);
+            return View(financialAccountServiceResponse.Data.ToList());
         }
 
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> Delete(Guid financialAccountId)
         {
-            string userIdString = User.FindFirst("UserId")?.Value;
-            if (string.IsNullOrEmpty(userIdString))
-            {
-                return View("Error", new ErrorViewModel() { RequestId = "Ошибка авторизации!" });
-            }
-
-            var userIdGuid = Guid.Parse(userIdString);
-
             var deleteResponse = await _financialAccountService.DeleteFinancialAccountAsync(financialAccountId);
 
             if (!deleteResponse.Success)
@@ -52,13 +44,7 @@ namespace FinanceTracker.Controllers
                 return View("Error", new ErrorViewModel() { RequestId = deleteResponse.Message });
             }
 
-            var getResponse = await _financialAccountService.GetFinancialAccountsByUserIdAsync(userIdGuid);
-            if (!getResponse.Success)
-            {
-                return View("Error", new ErrorViewModel() { RequestId = getResponse.Message });
-            }
-
-            return View("Index", getResponse.Data);
+            return Redirect("/FinancialAccount");
         }
 
         [HttpPost]
@@ -72,23 +58,27 @@ namespace FinanceTracker.Controllers
 
             var userIdGuid = Guid.Parse(userIdString);
 
-            if (ModelState.IsValid)
-            {
-                var updateResponse = await _financialAccountService.UpdateFinancialAccountAsync(model, financialAccountId, userIdGuid);
-
-                if (!updateResponse.Success)
-                {
-                    ModelState.AddModelError("Error", updateResponse.Message);
-                }
-            }
-
             var getResponse = await _financialAccountService.GetFinancialAccountsByUserIdAsync(userIdGuid);
             if (!getResponse.Success)
             {
                 return View("Error", new ErrorViewModel() { RequestId = getResponse.Message });
             }
 
-            return View("Index", getResponse.Data);
+            if (!ModelState.IsValid)
+            {
+                return View("Index", getResponse.Data.ToList());
+            }
+
+            var updateResponse = await _financialAccountService.UpdateFinancialAccountAsync(model, financialAccountId, userIdGuid);
+
+            if (!updateResponse.Success)
+            {
+                ModelState.AddModelError("Error", updateResponse.Message);
+
+                return View("Index", getResponse.Data.ToList());
+            }
+
+            return Redirect("/FinancialAccount");
         }
 
         [HttpPost]
@@ -102,23 +92,34 @@ namespace FinanceTracker.Controllers
 
             var userIdGuid = Guid.Parse(userIdString);
 
-            if (ModelState.IsValid)
-            {
-                var createResponse = await _financialAccountService.CreateFinancialAccountAsync(model, userIdGuid);
-
-                if (!createResponse.Success)
-                {
-                    ModelState.AddModelError("Error", createResponse.Message);
-                }
-            }
-
             var getResponse = await _financialAccountService.GetFinancialAccountsByUserIdAsync(userIdGuid);
             if (!getResponse.Success)
             {
                 return View("Error", new ErrorViewModel() { RequestId = getResponse.Message });
             }
 
-            return View("Index", getResponse.Data);
+            if (!ModelState.IsValid)
+            {
+                return View("Index", getResponse.Data.ToList());
+            }
+
+            var createResponse = await _financialAccountService.CreateFinancialAccountAsync(model, userIdGuid);
+
+            if (!createResponse.Success)
+            {
+                ModelState.AddModelError("Error", createResponse.Message);
+
+                return View("Index", getResponse.Data.ToList());
+            }
+
+            return Redirect("/FinancialAccount");
+        }
+
+        [HttpPost]
+        public IActionResult ClearModelState()
+        {
+            ViewData.ModelState.Clear();
+            return Ok();
         }
     }
 }

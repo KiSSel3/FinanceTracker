@@ -1,53 +1,126 @@
-﻿@model IEnumerable<FinanceTracker.Domain.Models.FinancialAccountModel>
+﻿@model List<FinanceTracker.Domain.Models.FinancialAccountModel>
 
-@{
-    ViewData["Title"] = "Index";
+<div class="modal fade" id="validationErrorsModal" tabindex="-1" aria-labelledby="validationErrorsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="validationErrorsModalLabel">Ошибки валидации</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>@Html.ValidationSummary(false, "", new { @class = "text-danger" })</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <h1 class="display-4 text-center">Информация о счетах</h1>
+    <hr class="my-4">
+
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col">
+                <div class="card h-100 text-center @(item.Balance <= 0 ? "border-danger":"border-success")">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Name</h5>
+                        <p class="card-text">@item.Balance $</p>
+                    </div>
+                    <div class="card-footer">
+                        <a asp-controller="FinancialAccount" asp-action="Delete" asp-route-financialAccountId="@item.Id" class="btn btn-primary">
+                            <i class="fas fa-trash"></i> Удалить
+                        </a>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#update" data-bs-route-id="@item.Id">
+                            <i class="fas fa-edit"></i> Изменить
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (Model.Count == 0 || Model.Count % 4 == 0)
+        {
+            <button type="button" class="btn btn-primary w-100 h-100" data-bs-toggle="modal" data-bs-target="#create" id="createBtn">
+                <i class="fas fa-plus-circle fa-3x"></i>
+            </button>
+        }
+        else
+        {
+            <div class="col">
+                <button type="button" class="btn btn-primary w-100 h-100" data-bs-toggle="modal" data-bs-target="#create" id="createBtn">
+                    <i class="fas fa-plus-circle fa-3x"></i>
+                </button>
+            </div>
+        }
+
+        <div class="modal fade" id="create" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="createLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createLabel">Создать новый счёт</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="create-form" class="form-horizontal" asp-controller="FinancialAccount" asp-action="Create" method="post">
+                            <div class="form-group">
+                                <label for="inputNameCreate">Name</label>
+                                <input name="Name" type="text" class="form-control" id="inputNameCreate">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary" form="create-form">Создать</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="update" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="updateLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updateLabel">Изменить название счёта</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="update-form" class="form-horizontal" asp-controller="FinancialAccount" asp-action="Update" method="post">
+                            <div class="form-group">
+                                <label for="inputNameUpdate">Name</label>
+                                <input name="Name" type="text" class="form-control" id="inputNameUpdate">
+                                <input type="hidden" name="financialAccountId" id="inputIdUpdate" />
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary" form="update-form">Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            @if (!ViewData.ModelState.IsValid)
+            {
+            <text>$('#validationErrorsModal').modal('show'); </text>
+            }
+
+            $('#update').on('shown.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var financialAccountId = button.data('bs-route-id');
+                console.log('financialAccountId:', financialAccountId);
+                var modal = $(this);
+                modal.find('#inputIdUpdate').val(financialAccountId);
+            });
+        });
+    </script>
 }
-
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.UserId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Balance)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Balance)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
-    </tbody>
-</table>

@@ -31,7 +31,7 @@ namespace FinanceTracker.Controllers
                 BaseResponse<ClaimsIdentity> response = await _userService.LoginAsync(model);
                 if (response.Success == true)
                 {
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(response.Data), new AuthenticationProperties { ExpiresUtc = DateTime.UtcNow.AddMinutes(5)});
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(response.Data), new AuthenticationProperties { ExpiresUtc = DateTime.UtcNow.AddDays(1)});
 
                     return Redirect("/");
                 }

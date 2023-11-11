@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
     <link rel="stylesheet" href="~/css/authorization.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/FinanceTracker.styles.css" asp-append-version="true" />
 
     <link rel="icon" href="favicon.ico" type="image/x-icon">
 
@@ -19,15 +21,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
-    @if (!ViewData.ModelState.IsValid)
-    {
-        <div id="errorModal" class="modal">
-            <div class="modal-content">
-                <p>@Html.ValidationSummary(false, "", new { @class = "text-danger" })</p>
-                <span class="close" id="closeErrorModal">&times;</span>
-            </div>
+
+    <div id="errorModal" class="error-modal">
+        <div class="error-modal-content">
+            <p>@Html.ValidationSummary(false, "", new { @class = "text-danger" })</p>
+            <span class="close" id="closeErrorModal">&times;</span>
         </div>
-    }
+    </div>
 
     <div class="container">
         <div class="row center-block">
