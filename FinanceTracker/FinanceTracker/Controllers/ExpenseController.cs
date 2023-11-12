@@ -1,10 +1,12 @@
 ﻿using FinanceTracker.Domain.ViewModels;
 using FinanceTracker.Models;
 using FinanceTracker.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinanceTracker.Controllers
 {
+    [Authorize]
     public class ExpenseController : Controller
     {
         private readonly IExpenseTypeService _expenseTypeService;
