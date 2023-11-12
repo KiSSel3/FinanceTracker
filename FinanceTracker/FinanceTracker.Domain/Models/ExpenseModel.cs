@@ -10,7 +10,7 @@ namespace FinanceTracker.Domain.Models
     {
         public ExpenseModel() =>
             (UserId, ExpenseTypeId, FinancialAccountId, Amount, Description, CreationData) = (Guid.Empty, Guid.Empty, Guid.Empty, 0, "None", DateTime.Now);
-        public ExpenseModel(Guid userId, Guid expenseTypeId, Guid financialAccountId, decimal amount, string description) =>
+        public ExpenseModel(Guid userId, Guid expenseTypeId, Guid financialAccountId, string description, decimal amount) =>
             (UserId, ExpenseTypeId, FinancialAccountId, Amount, Description, CreationData) = (userId, expenseTypeId, financialAccountId, amount, description, DateTime.Now);
 
         public Guid UserId { get; set; }
