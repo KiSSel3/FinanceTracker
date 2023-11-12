@@ -139,6 +139,50 @@ namespace FinanceTracker.Service.Implementations
             }
         }
 
+        public async Task<BaseResponse<decimal>> GetTotalIncomeAmountByUserIdAsync(Guid id)
+        {
+            decimal amount = 0;
+
+            try
+            {
+                var financialAccounts = await _financialAccountRepository.GetByUserIdAsync(id);
+
+                foreach (var financialAccount in financialAccounts)
+                {
+                    var incomes = await _incomeRepository.GetByFinancialAccountIdAsync(financialAccount.Id);
+                    amount += GetAmountByIncome(incomes);
+                }
+
+                return new BaseResponse<decimal>(true, amount);
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<decimal>(false, ex.Message);
+            }
+        }
+
+        public async Task<BaseResponse<decimal>> GetTotalExpenseAmountByUserIdAsync(Guid id)
+        {
+            decimal amount = 0;
+
+            try
+            {
+                var financialAccounts = await _financialAccountRepository.GetByUserIdAsync(id);
+
+                foreach (var financialAccount in financialAccounts)
+                {
+                    var expenses = await _expenseRepository.GetByFinancialAccountIdAsync(financialAccount.Id);
+                    amount += GetAmountByExpense(expenses);
+                }
+
+                return new BaseResponse<decimal>(true, amount);
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<decimal>(false, ex.Message);
+            }
+        }
+
         private decimal GetAmountByIncome(IEnumerable<IncomeModel> incomes)
         {
             decimal amount = 0;

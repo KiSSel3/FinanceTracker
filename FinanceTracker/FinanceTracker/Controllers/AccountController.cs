@@ -15,7 +15,8 @@ namespace FinanceTracker.Controllers
     {
         private readonly IUserService _userService;
 
-        public AccountController(IUserService userService) => (_userService) = (userService);
+        public AccountController(IUserService userService) => 
+            (_userService) = (userService);
 
         [HttpGet]
         public IActionResult Authorization()

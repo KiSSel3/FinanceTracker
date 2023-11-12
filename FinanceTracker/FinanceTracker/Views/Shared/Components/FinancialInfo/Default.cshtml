@@ -1,0 +1,22 @@
+﻿@model FinancialInfoViewModel
+
+<div class="header-financial-info d-flex justify-content-end">
+    <div class="header-financial-info-item m-3">
+        <span class="header-financial-info-label font-weight-bold text-center fw-bold">
+            <i class="fas fa-money-bill-alt fa-2x"></i>&nbsp; Общая сумма доходов:
+        </span>
+        <span class="header-financial-info-value text-center fw-bold">@Model.IncomeAmount $</span>
+    </div>
+    <div class="header-financial-info-item m-3">
+        <span class="header-financial-info-label font-weight-bold text-center fw-bold">
+            <i class="fas fa-coins fa-2x"></i>&nbsp; Общая сумма расходов:
+        </span>
+        <span class="header-financial-info-value text-center fw-bold">@Model.ExpenseAmount $</span>
+    </div>
+    <div class="header-financial-info-item m-3">
+        <span class="header-financial-info-label font-weight-bold text-center fw-bold">
+            <i class="fas fa-balance-scale fa-2x"></i>&nbsp; Итоговая сумма:
+        </span>
+        <span class="header-financial-info-value text-center fw-bold">@Model.TotalAmount $</span>
+    </div>
+</div>
