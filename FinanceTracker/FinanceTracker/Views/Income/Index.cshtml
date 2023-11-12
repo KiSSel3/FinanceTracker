@@ -1,4 +1,9 @@
-﻿@model List<FinanceTracker.Domain.Models.IncomeTypeModel>
+﻿@model IncomePageInfoViewModel
+
+@{
+    int prevPage = (Model.Incomes.CurrentPage == 1) ? 1 : Model.Incomes.CurrentPage - 1;
+    int nextPage = (Model.Incomes.CurrentPage == Model.Incomes.TotalPages) ? Model.Incomes.TotalPages : Model.Incomes.CurrentPage + 1;
+}
 
 <div class="modal fade" id="validationErrorsModal" tabindex="-1" aria-labelledby="validationErrorsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -24,93 +29,173 @@
     <h1 class="display-6 text-center my-4">Типы доходов</h1>
 
     <div class="row row-cols-1 row-cols-md-4 g-4">
-        @foreach (var item in Model)
+        @foreach (var item in Model.IncomeTypes)
         {
             <div class="col">
                 <div class="card h-100 text-center">
                     <div class="card-body">
-                        <h5 class="card-title">@item.Name</h5>
+                        <h5 class="card-title"><i class="fa-solid fa-arrow-trend-up"></i>&nbsp;@item.Name</h5>
                     </div>
                     <div class="card-footer">
-                        <a asp-controller="Income" asp-action="DeleteType" asp-route-incomeTypeId="@item.Id" class="btn btn-primary">
-                            <i class="fas fa-trash"></i> Удалить
+                        <div class="d-flex justify-content-between">
+                            <a asp-controller="Income" asp-action="DeleteType" asp-route-incomeTypeId="@item.Id" class="btn btn-primary m-1">
+                                <i class="fas fa-trash"></i> Удалить
+                            </a>
+                            <button type="button" class="btn btn-primary m-1" data-bs-toggle="modal" data-bs-target="#update" data-bs-route-id="@item.Id">
+                                <i class="fas fa-edit"></i> Изменить
+                            </button>
+                        </div>
+                        <a asp-controller="Income" asp-action="Delete" class="btn btn-primary w-100">
+                            <i class="fas fa-history"></i> История
                         </a>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#update" data-bs-route-id="@item.Id">
-                            <i class="fas fa-edit"></i> Изменить
-                        </button>
                     </div>
                 </div>
             </div>
         }
 
-        @if (Model.Count == 0 || Model.Count % 4 == 0)
+        @if (Model.IncomeTypes.Count == 0 || Model.IncomeTypes.Count % 4 == 0)
         {
-            <button type="button" class="btn btn-primary w-100 h-100" data-bs-toggle="modal" data-bs-target="#create" id="createBtn">
+            <button type="button" class="btn btn-primary w-100 h-100" data-bs-toggle="modal" data-bs-target="#createType" id="createTypeBtn">
                 <i class="fas fa-plus-circle fa-3x"></i>
             </button>
         }
         else
         {
             <div class="col">
-                <button type="button" class="btn btn-primary w-100 h-100" data-bs-toggle="modal" data-bs-target="#create" id="createBtn">
+                <button type="button" class="btn btn-primary w-100 h-100" data-bs-toggle="modal" data-bs-target="#createType" id="createTypeBtn">
                     <i class="fas fa-plus-circle fa-3x"></i>
                 </button>
             </div>
         }
-
-        <div class="modal fade" id="create" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="createLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="createLabel">Создать новый тип</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="create-form" class="form-horizontal" asp-controller="Income" asp-action="CreateType" method="post">
-                            <div class="form-group">
-                                <label for="inputNameCreate">Name</label>
-                                <input name="Name" type="text" class="form-control" id="inputNameCreate">
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                        <button type="submit" class="btn btn-primary" form="create-form">Создать</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="update" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="updateLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="updateLabel">Изменить название типа</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="update-form" class="form-horizontal" asp-controller="Income" asp-action="UpdateType" method="post">
-                            <div class="form-group">
-                                <label for="inputNameUpdate">Name</label>
-                                <input name="Name" type="text" class="form-control" id="inputNameUpdate">
-                                <input type="hidden" name="incomeTypeId" id="inputIdUpdate" />
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                        <button type="submit" class="btn btn-primary" form="update-form">Сохранить</button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <hr class="my-4">
 
-    <h1 class="display-6 text-center my-4">История доходов</h1>
+    <h1 class="display-6 text-center">Общая история доходов</h1>
 
+    <button type="button" class="btn btn-primary w-100 h-100 my-4" data-bs-toggle="modal" data-bs-target="#createIncome" id="createIncomeBtn">
+        <i class="fas fa-plus-circle fa-3x"></i>
+    </button>
 
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        @foreach (var item in Model.Incomes.Items)
+        {
+            <div class="col">
+                <div class="card h-100 text-center">
+                    <div class="card-body d-flex flex-row justify-content-between">
+                        <h5 class="card-title">+ @item.Amount $</h5>
+                        <p class="card-text"> @item.Description</p>
+                        <p class="card-text"> @item.CreationData</p>
+                    </div>
+                    <div class="card-footer">
+                        <a asp-controller="Income" asp-action="Delete" asp-route-incomeId="@item.Id" class="btn btn-primary">
+                            <i class="fas fa-trash"></i> Удалить
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <nav aria-label="Page navigation" class="my-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item">
+                <a class="page-link" aria-label="Previous" asp-controller="Income" asp-action="Index" asp-route-pageNow="@prevPage">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            @for (int i = 0; i < Model.Incomes.TotalPages; ++i)
+            {
+                <li class="page-item @(Model.Incomes.CurrentPage == i+1 ? "active":"")"><a class="page-link" asp-controller="Income" asp-action="Index" asp-route-pageNow="@(i+1)">@(i + 1)</a></li>
+            }
+
+            <li class="page-item">
+                <a class="page-link" aria-label="Next" asp-controller="Income" asp-action="Index" asp-route-pageNow="@nextPage">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<div class="modal fade" id="createIncome" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="createIncomeLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createIncomeLabel">Создать новый доход</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createIncome-form" class="form-horizontal" asp-controller="Income" asp-action="Create" method="post">
+                    <div class="form-group">
+                        <label for="selectType">Выберите тип:</label>
+                        <select name="TypeId" class="form-control" id="selectType" asp-items="@Model.SelectListIncomeType"></select>
+
+                        <label for="selectAccount">Выберите счёт:</label>
+                        <select name="FinancialAccountId" class="form-control" id="selectAccount" asp-items="@Model.SelectListFinancialAccount"></select>
+
+                        <label for="inputAmount">Сумма:</label>
+                        <input name="Amount" type="number" class="form-control" id="inputAmount" value="0">
+
+                        <label for="inputDescr">Name</label>
+                        <input name="Description" type="text" class="form-control" id="inputDescr">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <button type="submit" class="btn btn-primary" form="createIncome-form">Создать</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="update" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="updateLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateLabel">Изменить название типа</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <form id="update-form" class="form-horizontal" asp-controller="Income" asp-action="UpdateType" method="post">
+                    <div class="form-group">
+                        <label for="inputNameUpdate">Name</label>
+                        <input name="Name" type="text" class="form-control" id="inputNameUpdate">
+                        <input type="hidden" name="incomeTypeId" id="inputIdUpdate" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <button type="submit" class="btn btn-primary" form="update-form">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createType" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="createTypeLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createTypeLabel">Создать новый тип</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createType-form" class="form-horizontal" asp-controller="Income" asp-action="CreateType" method="post">
+                    <div class="form-group">
+                        <label for="inputNameCreateType">Name</label>
+                        <input name="Name" type="text" class="form-control" id="inputNameCreateType">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <button type="submit" class="btn btn-primary" form="createType-form">Создать</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section scripts {

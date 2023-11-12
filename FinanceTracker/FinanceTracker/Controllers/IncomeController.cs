@@ -3,6 +3,7 @@ using FinanceTracker.Models;
 using FinanceTracker.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FinanceTracker.Controllers
 {
@@ -10,11 +11,16 @@ namespace FinanceTracker.Controllers
     public class IncomeController : Controller
     {
         private readonly IIncomeTypeService _incomeTypeService;
-        public IncomeController (IIncomeTypeService incomeTypeService) =>
-            (_incomeTypeService) = (incomeTypeService);
+        private readonly IIncomeService _incomeService;
+
+        private readonly IFinancialAccountService _financialAccountService;
+
+        private readonly IConfiguration _configuration;
+        public IncomeController (IIncomeTypeService incomeTypeService, IIncomeService incomeService, IFinancialAccountService financialAccountService, IConfiguration configuration) =>
+            (_incomeTypeService, _incomeService, _financialAccountService, _configuration) = (incomeTypeService, incomeService, financialAccountService, configuration);
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNow = 1)
         {
             string userIdString = User.FindFirst("UserId")?.Value;
             if (string.IsNullOrEmpty(userIdString))
@@ -24,13 +30,7 @@ namespace FinanceTracker.Controllers
 
             var userIdGuid = Guid.Parse(userIdString);
 
-            var incomeTypeServiceResponse = await _incomeTypeService.GetIncomeTypesByUserIdAsync(userIdGuid);
-            if (!incomeTypeServiceResponse.Success)
-            {
-                return View("Error", new ErrorViewModel() { RequestId = incomeTypeServiceResponse.Message });
-            }
-
-            return View(incomeTypeServiceResponse.Data.ToList());
+            return await GetFullInfoAndShowIndex(userIdGuid, pageNow);
         }
 
         [HttpGet]
@@ -57,15 +57,9 @@ namespace FinanceTracker.Controllers
 
             var userIdGuid = Guid.Parse(userIdString);
 
-            var getResponse = await _incomeTypeService.GetIncomeTypesByUserIdAsync(userIdGuid);
-            if (!getResponse.Success)
-            {
-                return View("Error", new ErrorViewModel() { RequestId = getResponse.Message });
-            }
-
             if (!ModelState.IsValid)
             {
-                return View("Index", getResponse.Data.ToList());
+                return await GetFullInfoAndShowIndex(userIdGuid);
             }
 
             var updateResponse = await _incomeTypeService.UpdateIncomeTypeAsync(model, incomeTypeId, userIdGuid);
@@ -74,7 +68,7 @@ namespace FinanceTracker.Controllers
             {
                 ModelState.AddModelError("Error", updateResponse.Message);
 
-                return View("Index", getResponse.Data.ToList());
+                return await GetFullInfoAndShowIndex(userIdGuid);
             }
 
             return Redirect("/Income");
@@ -91,15 +85,9 @@ namespace FinanceTracker.Controllers
 
             var userIdGuid = Guid.Parse(userIdString);
 
-            var getResponse = await _incomeTypeService.GetIncomeTypesByUserIdAsync(userIdGuid);
-            if (!getResponse.Success)
-            {
-                return View("Error", new ErrorViewModel() { RequestId = getResponse.Message });
-            }
-
             if (!ModelState.IsValid)
             {
-                return View("Index", getResponse.Data.ToList());
+                return await GetFullInfoAndShowIndex(userIdGuid);
             }
 
             var createResponse = await _incomeTypeService.CreateIncomeTypeAsync(model, userIdGuid);
@@ -108,10 +96,82 @@ namespace FinanceTracker.Controllers
             {
                 ModelState.AddModelError("Error", createResponse.Message);
 
-                return View("Index", getResponse.Data.ToList());
+                return await GetFullInfoAndShowIndex(userIdGuid);
             }
 
             return Redirect("/Income");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(TransactionViewModel model)
+        {
+            string userIdString = User.FindFirst("UserId")?.Value;
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return View("Error", new ErrorViewModel() { RequestId = "Ошибка авторизации!" });
+            }
+
+            var userIdGuid = Guid.Parse(userIdString);
+
+            if (!ModelState.IsValid)
+            {
+                return await GetFullInfoAndShowIndex(userIdGuid);
+            }
+
+            var createResponse = await _incomeService.CreateIncomeModelAsync(model, userIdGuid);
+
+            if (!createResponse.Success)
+            {
+                ModelState.AddModelError("Error", createResponse.Message);
+
+                return await GetFullInfoAndShowIndex(userIdGuid);
+            }
+
+            return Redirect("/Income");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(Guid incomeId)
+        {
+            var deleteResponse = await _incomeService.DeleteIncomeModelAsync(incomeId);
+
+            if (!deleteResponse.Success)
+            {
+                return View("Error", new ErrorViewModel() { RequestId = deleteResponse.Message });
+            }
+
+            return Redirect("/Income");
+        }
+
+        private async Task<IActionResult> GetFullInfoAndShowIndex(Guid userId, int pageNow = 1)
+        {
+            var viewModel = new IncomePageInfoViewModel();
+
+            var getIncomeTypesResponse = await _incomeTypeService.GetIncomeTypesByUserIdAsync(userId);
+            if (!getIncomeTypesResponse.Success)
+            {
+                return View("Error", new ErrorViewModel() { RequestId = getIncomeTypesResponse.Message });
+            }
+            viewModel.IncomeTypes = getIncomeTypesResponse.Data.ToList();
+            viewModel.SelectListIncomeType = new SelectList(getIncomeTypesResponse.Data.ToList(), "Id", "Name");
+
+            var getFinancialAccountResponse = await _financialAccountService.GetFinancialAccountsByUserIdAsync(userId);
+            if (!getFinancialAccountResponse.Success)
+            {
+                return View("Error", new ErrorViewModel() { RequestId = getFinancialAccountResponse.Message });
+            }
+            viewModel.SelectListFinancialAccount = new SelectList(getFinancialAccountResponse.Data.ToList(), "Id", "Name");
+
+            int itemsPerPage = int.Parse(_configuration.GetSection("ItemsPerPage").Value);
+
+            var getIncomeResponse = await _incomeService.GetIncomeModelByUserIdAsync(userId, pageNow, itemsPerPage);
+            if (!getIncomeResponse.Success)
+            {
+                return View("Error", new ErrorViewModel() { RequestId = getIncomeResponse.Message });
+            }
+            viewModel.Incomes = getIncomeResponse.Data;
+
+            return View("Index", viewModel);
         }
     }
 }

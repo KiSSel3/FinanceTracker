@@ -157,7 +157,7 @@ namespace FinanceTracker.Service.Implementations
 
             foreach (var expense in expenses)
             {
-                amount -= expense.Amount;
+                amount += expense.Amount;
             }
 
             return amount;
