@@ -152,5 +152,22 @@ namespace FinanceTracker.Service.Implementations
                 return new BaseResponse<PaginatedList<ExpenseModel>>(false, ex.Message);
             }
         }
+
+        public async Task<BaseResponse<IEnumerable<ExpenseModel>>> GetExpenseModelHistoryAsync(Guid typeId, int? month, int? year)
+        {
+            try
+            {
+                var expenseModels = await _expenseRepository.GetByExpenseTypeIdAsync(typeId);
+
+                var filteredExpenseModels = expenseModels
+                    .Where(em => (month == null || em.CreationData.Month == month.Value) && (year == null || em.CreationData.Year == year.Value));
+
+                return new BaseResponse<IEnumerable<ExpenseModel>>(true, filteredExpenseModels);
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<IEnumerable<ExpenseModel>>(false, ex.Message);
+            }
+        }
     }
 }

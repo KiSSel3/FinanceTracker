@@ -1,5 +1,6 @@
 ﻿using FinanceTracker.Domain.ViewModels;
 using FinanceTracker.Models;
+using FinanceTracker.Service.Implementations;
 using FinanceTracker.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -141,6 +142,27 @@ namespace FinanceTracker.Controllers
             }
 
             return Redirect("/Income");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> History(Guid incomeTypeId, int? month, int? year)
+        {
+            string userIdString = User.FindFirst("UserId")?.Value;
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return View("Error", new ErrorViewModel() { RequestId = "Ошибка авторизации!" });
+            }
+            var userIdGuid = Guid.Parse(userIdString);
+
+            var response = await _incomeService.GetIncomeModelHistoryAsync(incomeTypeId, month, year);
+            if (!response.Success)
+            {
+                ModelState.AddModelError("Error", response.Message);
+
+                return await GetFullInfoAndShowIndex(userIdGuid);
+            }
+
+            return View(response.Data.ToList());
         }
 
         private async Task<IActionResult> GetFullInfoAndShowIndex(Guid userId, int pageNow = 1)

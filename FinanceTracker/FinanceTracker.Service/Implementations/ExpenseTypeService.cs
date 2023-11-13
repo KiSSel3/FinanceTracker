@@ -14,9 +14,10 @@ namespace FinanceTracker.Service.Implementations
     public class ExpenseTypeService : IExpenseTypeService
     {
         private readonly IExpenseTypeRepository _expenseTypeRepository;
+        private readonly IExpenseRepository _expenseRepository;
 
-        public ExpenseTypeService(IExpenseTypeRepository expenseTypeRepository) =>
-            (_expenseTypeRepository) = (expenseTypeRepository);
+        public ExpenseTypeService(IExpenseTypeRepository expenseTypeRepository, IExpenseRepository expenseRepository) =>
+            (_expenseTypeRepository, _expenseRepository) = (expenseTypeRepository, expenseRepository);
 
         public async Task<BaseResponse<ExpenseTypeModel>> CreateExpenseTypeAsync(TypeViewModel model, Guid userId)
         {
@@ -66,7 +67,16 @@ namespace FinanceTracker.Service.Implementations
         {
             try
             {
-                var expenseTypes = await _expenseTypeRepository.GetByUserIdAsync(id);
+                var expenseTypes = (await _expenseTypeRepository.GetByUserIdAsync(id)).ToList();
+
+                for(int i = 0; i < expenseTypes.Count; ++i)
+                {
+                    var currentExpenseType = expenseTypes.ElementAt(i);
+
+                    var expenses = await _expenseRepository.GetByExpenseTypeIdAsync(currentExpenseType.Id);
+
+                    currentExpenseType.Balance = GetAmountByExpense(expenses);
+                }
 
                 return new BaseResponse<IEnumerable<ExpenseTypeModel>>(true, expenseTypes);
             }
@@ -104,6 +114,18 @@ namespace FinanceTracker.Service.Implementations
             {
                 return new BaseResponse<ExpenseTypeModel>(false, ex.Message);
             }
+        }
+
+        private decimal GetAmountByExpense(IEnumerable<ExpenseModel> expenses)
+        {
+            decimal amount = 0;
+
+            foreach (var expense in expenses)
+            {
+                amount += expense.Amount;
+            }
+
+            return amount;
         }
     }
 }

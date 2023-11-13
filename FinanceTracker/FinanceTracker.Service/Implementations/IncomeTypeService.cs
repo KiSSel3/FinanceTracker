@@ -15,9 +15,9 @@ namespace FinanceTracker.Service.Implementations
     public class IncomeTypeService : IIncomeTypeService
     {
         private readonly IIncomeTypeRepository _incomeTypeRepository;
-
-        public IncomeTypeService(IIncomeTypeRepository incomeTypeRepository) =>
-            (_incomeTypeRepository) = (incomeTypeRepository);
+        private readonly IIncomeRepository _incomeRepository;
+        public IncomeTypeService(IIncomeTypeRepository incomeTypeRepository, IIncomeRepository incomeRepository) =>
+            (_incomeTypeRepository, _incomeRepository) = (incomeTypeRepository, incomeRepository);
 
         public async Task<BaseResponse<IncomeTypeModel>> CreateIncomeTypeAsync(TypeViewModel model, Guid userId)
         {
@@ -67,7 +67,16 @@ namespace FinanceTracker.Service.Implementations
         {
             try
             {
-                var incomeTypes = await _incomeTypeRepository.GetByUserIdAsync(id);
+                var incomeTypes = (await _incomeTypeRepository.GetByUserIdAsync(id)).ToList();
+
+                for (int i = 0; i < incomeTypes.Count; ++i)
+                {
+                    var currentIncomeType = incomeTypes.ElementAt(i);
+
+                    var incomes = await _incomeRepository.GetByIncomeTypeIdAsync(currentIncomeType.Id);
+
+                    currentIncomeType.Balance = GetAmountByIncome(incomes);
+                }
 
                 return new BaseResponse<IEnumerable<IncomeTypeModel>>(true, incomeTypes);
             }
@@ -105,6 +114,18 @@ namespace FinanceTracker.Service.Implementations
             {
                 return new BaseResponse<IncomeTypeModel>(false, ex.Message);
             }
+        }
+
+        private decimal GetAmountByIncome(IEnumerable<IncomeModel> incomes)
+        {
+            decimal amount = 0;
+
+            foreach (var income in incomes)
+            {
+                amount += income.Amount;
+            }
+
+            return amount;
         }
     }
 }

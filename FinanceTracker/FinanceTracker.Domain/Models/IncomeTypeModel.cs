@@ -15,5 +15,6 @@ namespace FinanceTracker.Domain.Models
 
         public Guid UserId { get; set; }
         public string Name { get; set; }
+        public decimal Balance { get; set; }
     }
 }

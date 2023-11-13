@@ -35,6 +35,7 @@
                 <div class="card h-100 text-center">
                     <div class="card-body">
                         <h5 class="card-title"><i class="fa-solid fa-arrow-trend-up"></i>&nbsp;@item.Name</h5>
+                        <p class="card-text">@item.Balance $</p>
                     </div>
                     <div class="card-footer">
                         <div class="d-flex justify-content-between">
@@ -45,9 +46,9 @@
                                 <i class="fas fa-edit"></i> Изменить
                             </button>
                         </div>
-                        <a asp-controller="Income" asp-action="Delete" class="btn btn-primary w-100">
+                        <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#history" data-bs-route-id="@item.Id">
                             <i class="fas fa-history"></i> История
-                        </a>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -138,7 +139,7 @@
                         <label for="inputAmount">Сумма:</label>
                         <input name="Amount" type="number" class="form-control" id="inputAmount" value="0">
 
-                        <label for="inputDescr">Name</label>
+                        <label for="inputDescr">Описание:</label>
                         <input name="Description" type="text" class="form-control" id="inputDescr">
                     </div>
                 </form>
@@ -198,6 +199,35 @@
     </div>
 </div>
 
+<div class="modal fade" id="history" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="historyLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="historyLabel">Выберите дату:</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <form id="history-form" class="form-horizontal" asp-controller="Income" asp-action="History" method="post">
+                    <div class="form-group">
+
+                        <label for="inputMonth">Месяц</label>
+                        <input name="month" type="number" min="1" max="12" class="form-control" id="inputMonth">
+
+                        <label for="inputYear">Год</label>
+                        <input name="year" type="number" min="2000" max="2023" class="form-control" id="inputYear" title="2000 - 2023">
+
+                        <input type="hidden" name="incomeTypeId" id="inputIdHistory" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <button type="submit" class="btn btn-primary" form="history-form">Посмотреть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section scripts {
     <script>
         $(document).ready(function () {
@@ -211,6 +241,13 @@
                 var incomeTypeId = button.data('bs-route-id');
                 var modal = $(this);
                 modal.find('#inputIdUpdate').val(incomeTypeId);
+            });
+
+            $('#history').on('shown.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var incomeTypeId = button.data('bs-route-id');
+                var modal = $(this);
+                modal.find('#inputIdHistory').val(incomeTypeId);
             });
         });
     </script>

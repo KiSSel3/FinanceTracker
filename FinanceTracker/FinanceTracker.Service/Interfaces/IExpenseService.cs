@@ -15,6 +15,7 @@ namespace FinanceTracker.Service.Interfaces
         public Task<BaseResponse<PaginatedList<ExpenseModel>>> GetExpenseModelByUserIdAsync(Guid userId, int pageNow, int pageSize);
         public Task<BaseResponse<PaginatedList<ExpenseModel>>> GetExpenseModelByTypeIdAsync(Guid typeId, int pageNow, int pageSize);
         public Task<BaseResponse<PaginatedList<ExpenseModel>>> GetExpenseModelByFinancialAccountIdAsync(Guid financialAccountId, int pageNow, int pageSize);
+        public Task<BaseResponse<IEnumerable<ExpenseModel>>> GetExpenseModelHistoryAsync(Guid typeId, int? month, int? year);
         public Task<BaseResponse<ExpenseModel>> CreateExpenseModelAsync(TransactionViewModel model, Guid userId);
         public Task<BaseResponse<ExpenseModel>> DeleteExpenseModelAsync(Guid expenseModelId);
     }

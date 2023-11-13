@@ -2,6 +2,7 @@
 using FinanceTracker.Domain.Models;
 using FinanceTracker.Domain.Response;
 using FinanceTracker.Domain.ViewModels;
+using FinanceTracker.Repository.Implementations;
 using FinanceTracker.Repository.Interfaces;
 using FinanceTracker.Service.Interfaces;
 using System;
@@ -149,6 +150,23 @@ namespace FinanceTracker.Service.Implementations
             catch (Exception ex)
             {
                 return new BaseResponse<PaginatedList<IncomeModel>>(false, ex.Message);
+            }
+        }
+
+        public async Task<BaseResponse<IEnumerable<IncomeModel>>> GetIncomeModelHistoryAsync(Guid typeId, int? month, int? year)
+        {
+            try
+            {
+                var incomeModels = await _incomeRepository.GetByIncomeTypeIdAsync(typeId);
+
+                var filteredIncomeModels = incomeModels
+                    .Where(em => (month == null || em.CreationData.Month == month.Value) && (year == null || em.CreationData.Year == year.Value));
+
+                return new BaseResponse<IEnumerable<IncomeModel>>(true, filteredIncomeModels);
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<IEnumerable<IncomeModel>>(false, ex.Message);
             }
         }
     }

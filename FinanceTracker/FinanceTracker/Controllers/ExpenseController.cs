@@ -145,6 +145,28 @@ namespace FinanceTracker.Controllers
             return Redirect("/Expense");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> History(Guid expenseTypeId, int? month, int? year)
+        {
+            string userIdString = User.FindFirst("UserId")?.Value;
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return View("Error", new ErrorViewModel() { RequestId = "Ошибка авторизации!" });
+            }
+
+            var userIdGuid = Guid.Parse(userIdString);
+
+            var response = await _expenseService.GetExpenseModelHistoryAsync(expenseTypeId, month, year);
+            if (!response.Success)
+            {
+                ModelState.AddModelError("Error", response.Message);
+
+                return await GetFullInfoAndShowIndex(userIdGuid);
+            }
+
+            return View(response.Data.ToList());
+        }
+
         private async Task<IActionResult> GetFullInfoAndShowIndex(Guid userId, int pageNow = 1)
         {
             var viewModel = new ExpensePageInfoViewModel();
