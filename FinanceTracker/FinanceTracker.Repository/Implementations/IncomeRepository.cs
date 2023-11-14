@@ -31,6 +31,7 @@ namespace FinanceTracker.Repository.Implementations
         {
             return await _db.Incomes
                 .AsNoTracking()
+                .OrderByDescending(income => income.CreationData)
                 .ToListAsync();
         }
 
@@ -38,6 +39,7 @@ namespace FinanceTracker.Repository.Implementations
         {
             return _db.Incomes
                 .AsNoTracking()
+                .OrderByDescending(income => income.CreationData)
                 .Where(income => income.FinancialAccountId.Equals(id));
         }
 
@@ -52,6 +54,7 @@ namespace FinanceTracker.Repository.Implementations
         {
             return _db.Incomes
                 .AsNoTracking()
+                .OrderByDescending(income => income.CreationData)
                 .Where(income => income.IncomeTypeId.Equals(id));
         }
 
@@ -59,6 +62,7 @@ namespace FinanceTracker.Repository.Implementations
         {
             return _db.Incomes
                 .AsNoTracking()
+                .OrderByDescending(income => income.CreationData)
                 .Where(income => income.UserId.Equals(id));
         }
 
