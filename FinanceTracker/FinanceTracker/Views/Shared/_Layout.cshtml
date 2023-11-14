@@ -2,6 +2,8 @@
     var userId = Guid.Parse(User.FindFirst("UserId")?.Value);
 
     var userLogin = User.Identity.Name;
+
+    var isAdmin = User.IsInRole("ADMIN");
 }
 
 <!DOCTYPE html>
@@ -27,6 +29,11 @@
                 <a class="nav-link text-dark font-weight-bold text-center fw-bold" asp-controller="Home" asp-action="Index" title="На главную"><i class="fa-solid fa-coins fa-2x"></i></a>
 
                 <a class="nav-link text-dark font-weight-bold text-center fw-bold" asp-controller="Account" asp-action="Logout" title="Выйти">&nbsp; @userLogin</a>
+
+                @if (isAdmin)
+                {
+                    <a class="nav-link text-dark font-weight-bold text-center fw-bold" asp-controller="Admin" asp-action="Index">Админ панель</a>
+                }
             </div>
             
             @await Component.InvokeAsync("FinancialInfo", new { userId = userId })

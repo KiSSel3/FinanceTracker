@@ -1,0 +1,97 @@
+﻿@model AdminInfoViewModel
+
+<div class="modal fade" id="validationErrorsModal" tabindex="-1" aria-labelledby="validationErrorsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="validationErrorsModalLabel">Ошибка!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>@Html.ValidationSummary(false, "", new { @class = "text-danger" })</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <h1 class="display-4 text-center">Статистика</h1>
+    <hr class="my-4">
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col">
+            <h2 class="text-center fs-3 mb-4">Средний возраст: @Model.AverageAge</h2>
+            <hr class="my-3">
+
+            <h2 class="text-center fs-3 mb-4">Минимальный возраст: @Model.MinAge</h2>
+            <hr class="my-3">
+
+            <h2 class="text-center fs-3 mb-4">Максимальный возраст: @Model.MaxAge</h2>
+            <hr class="my-3">
+        </div>
+        <div class="col">
+            <h2 class="text-center fs-3 mb-4">Средний доход: @Model.AverageIncome.ToString("N2") $</h2>
+            <hr class="my-3">
+
+            <h2 class="text-center fs-3 mb-4">Минимальный доход: @Model.MinIncome.ToString("N2") $</h2>
+            <hr class="my-3">
+
+            <h2 class="text-center fs-3 mb-4">Максимальный доход: @Model.MaxIncome.ToString("N2") $</h2>
+            <hr class="my-3">
+        </div>
+        <div class="col">
+            <h2 class="text-center fs-3 mb-4">Средняя трата: @Model.AverageExpense.ToString("N2") $</h2>
+            <hr class="my-3">
+
+            <h2 class="text-center fs-3 mb-4">Минимальная трата: @Model.MinExpense.ToString("N2") $</h2>
+            <hr class="my-3">
+
+            <h2 class="text-center fs-3 mb-4">Максимальная трата: @Model.MaxExpense.ToString("N2") $</h2>
+            <hr class="my-3">
+        </div>
+    </div>
+
+    <h1 class="display-4 text-center">Добавить админа</h1>
+    <hr class="my-4">
+
+    <button type="button" class="btn btn-primary w-100 h-100" data-bs-toggle="modal" data-bs-target="#create">
+        <i class="fas fa-plus-circle fa-3x"></i>
+    </button>
+</div>
+
+<div class="modal fade" id="create" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="createLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createLabel">Создать новый доход</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <form id="create-form" class="form-horizontal" asp-controller="Admin" asp-action="Create" method="post">
+                    <div class="form-group">
+                        <label for="inputLogin">Логин пользователя:</label>
+                        <input name="login" type="text" class="form-control" id="inputLogin">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <button type="submit" class="btn btn-primary" form="create-form">Создать</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <text>$('#validationErrorsModal').modal('show'); </text>
+        }
+        });
+    </script>
+}
